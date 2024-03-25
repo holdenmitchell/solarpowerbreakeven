@@ -137,7 +137,7 @@ function PayoffChart({
   };
 
   return (
-    <div className="shadow-sm rounded-md border-gray-200 p-2 bg-white">
+    <div className="shadow-md rounded-md border-gray-200 p-4 bg-white">
       <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );

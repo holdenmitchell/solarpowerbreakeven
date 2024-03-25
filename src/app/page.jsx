@@ -10,6 +10,9 @@ import { preSolar, postSolar } from './data';
 import PayoffChart from './PayoffChart';
 import SectionHeader from './SectionHeader';
 import StatCard from './StatCard';
+import SectionBody from './SectionBody';
+import Action from './Action';
+import Details from './Details';
 
 export default function Home() {
   const totalCostWithSolar = postSolar.reduce(
@@ -38,17 +41,14 @@ export default function Home() {
   const fullCostOfSystem = 27940;
   const totalTaxCredit = 8372;
   const totalSolarizeGreenCounty = 3080;
+  const totalCredits = totalTaxCredit + totalSolarizeGreenCounty;
   const actualCost =
     fullCostOfSystem - totalTaxCredit - totalSolarizeGreenCounty;
   // https://www.solarreviews.com/blog/average-electricity-cost-increase-per-year
   const energyInflation = 0.0259; // 2.59% annual inflation
 
   const { payoffYears, leftoverDays, days, accumulatedSavings } =
-    calculatePayoffDays(
-      actualCost,
-      dailyCost,
-      energyInflation
-    );
+    calculatePayoffDays(actualCost, dailyCost, energyInflation);
 
   // Days since August 2023
   const purchaseDate = new Date('2023-08-08');
@@ -64,10 +64,7 @@ export default function Home() {
     energyInflation
   );
 
-  const projectedSavings = calculateTotalSavings(
-    dailyCost,
-    energyInflation
-  );
+  const projectedSavings = calculateTotalSavings(dailyCost, energyInflation);
 
   const stats = [
     {
@@ -78,7 +75,7 @@ export default function Home() {
       displayChange: false,
     },
     {
-      name: 'Avg. Cost Per Day Since Solar',
+      name: 'Avg. $ / Day Since Solar',
       value: `$${dailyCostWithSolar.toFixed(2)}`,
       change: `$${dailyCost.toFixed(2)}`,
       changeType: 'positive',
@@ -118,40 +115,45 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="space-y-16 py-16 xl:space-y-20">
-          {/* Recent activity table */}
+        <div className="space-y-8 py-8 xl:space-y-20">
           <div>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <SectionHeader text="Payoff Chart" />
-            </div>
-            <div className="mt-6 overflow-hidden border-t border-gray-100">
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
-                  <PayoffChart
-                    actualCost={actualCost}
-                    costPerDayStart={dailyCost}
-                    energyInflation={energyInflation}
-                    purchaseDate={purchaseDate}
-                  />
-                </div>
-              </div>
-            </div>
+            <SectionHeader text="Payoff Chart" />
+            <SectionBody>
+              <PayoffChart
+                actualCost={actualCost}
+                costPerDayStart={dailyCost}
+                energyInflation={energyInflation}
+                purchaseDate={purchaseDate}
+              />
+
+              <h2 className="mx-auto mt-8 max-w-2xl text-2xl font-semibold leading-6 text-gray-900 lg:mx-0 lg:max-w-none border-b pb-4">
+                System Details
+              </h2>
+              <Details
+                totalCredits={totalCredits}
+                fullCostOfSystem={fullCostOfSystem}
+                actualCost={actualCost}
+                purchaseDate={purchaseDate}
+              />
+            </SectionBody>
           </div>
         </div>
 
-        <div className="space-y-16 py-16 xl:space-y-20">
-          {/* Recent activity table */}
+        <div className="space-y-8 py-8 xl:space-y-20">
           <div>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <SectionHeader text="Monthly Electric Bills Before and After Solar" />
-            </div>
-            <div className="mt-6 overflow-hidden border-gray-100">
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
-                  <Table />
-                </div>
-              </div>
-            </div>
+            <SectionHeader text="Monthly Electric Bills Before and After Solar" />
+
+            <SectionBody>
+              <Table />
+            </SectionBody>
+          </div>
+        </div>
+
+        <div className="space-y-8 py-8 xl:space-y-20">
+          <div>
+            <SectionBody>
+              <Action />
+            </SectionBody>
           </div>
         </div>
       </main>

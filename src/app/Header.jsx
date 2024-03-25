@@ -12,10 +12,9 @@ function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // Single page app where pages just go down the that heading
   const navigation = [
-    { name: 'Breakeven', href: '/' },
-    { name: 'Financing', href: '/financing' },
-    { name: 'FAQ', href: '/faq' },
-    { name: 'Learn More', href: '#' },
+    { name: 'Home', href: '/' },
+    { name: 'About', href: '/about' },
+    { name: 'Contact Us', href: '/contact' },
   ];
 
   return (
@@ -36,8 +35,8 @@ function Header() {
           <Image
             src="/solarpowerbreakeven.png"
             className="h-auto w-auto"
-            width={100}
-            height={100}
+            width={85}
+            height={85}
             alt="Solar Power Breakeven Logo"
           />
         </div>

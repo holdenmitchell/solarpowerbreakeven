@@ -58,9 +58,11 @@ export default function Home() {
           <div>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               {/* Recent activity table */}
-              <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
-                <div className="px-4 py-5 sm:px-6">
-                  <SectionHeader text="Contact Us" />
+              <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow-lg">
+                <div className="py-5 px-2">
+                  <h2 className="mx-auto max-w-2xl text-2xl font-semibold leading-6 text-gray-900 lg:mx-0 lg:max-w-none pl-4 pb-4">
+                    Contact Us
+                  </h2>
                 </div>
                 <div className="px-4 py-5 sm:p-6">
                   <div id="hubspotForm"></div>
