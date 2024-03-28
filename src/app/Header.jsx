@@ -13,7 +13,6 @@ function Header() {
   // Single page app where pages just go down the that heading
   const navigation = [
     { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
     { name: 'Contact Us', href: '/contact' },
   ];
 
