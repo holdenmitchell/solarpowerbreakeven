@@ -1,5 +1,16 @@
 export const postSolar = [
   {
+    date: '4/01/2024',
+    days: '32',
+    dueDate: '4/23/2024',
+    tariff: '67',
+    usage: '303',
+    averageUsagePerDay: '9',
+    price: '11.96',
+    pricePerDay: '0.37',
+
+  },
+  {
     date: '2/29/2024',
     days: '29',
     dueDate: '3/22/2024',
