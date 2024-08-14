@@ -12,8 +12,6 @@ function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // Single page app where pages just go down the that heading
   const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'Contact Us', href: '/contact' },
   ];
 
   return (

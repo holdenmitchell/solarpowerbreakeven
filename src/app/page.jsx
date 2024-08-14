@@ -149,13 +149,15 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="space-y-8 py-8 xl:space-y-20">
-          <div>
-            <SectionBody>
-              <Action />
-            </SectionBody>
+        {false && (
+          <div className="space-y-8 py-8 xl:space-y-20">
+            <div>
+              <SectionBody>
+                <Action />
+              </SectionBody>
+            </div>
           </div>
-        </div>
+        )}
       </main>
     </>
   );
