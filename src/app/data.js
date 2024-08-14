@@ -1,5 +1,41 @@
 export const postSolar = [
   {
+    date: '7/31/2024',
+    days: '30',
+    dueDate: '8/23/2024',
+    tariff: '67',
+    usage: '1253',
+    averageUsagePerDay: '40',
+    price: '99.12',
+    pricePerDay: '3.30',
+    withoutSolar: '155.57',
+    saved: '56.45'
+  },
+  {
+    date: '7/1/2024',
+    days: '31',
+    dueDate: '7/26/2024',
+    tariff: '67',
+    usage: '1170',
+    averageUsagePerDay: '38',
+    price: '85.31',
+    pricePerDay: '2.75',
+    withoutSolar: '147.28',
+    saved: '61.97'
+  },
+  {
+    date: '5/31/2024',
+    days: '31',
+    dueDate: '6/24/2024',
+    tariff: '67',
+    usage: '725',
+    averageUsagePerDay: '23',
+    price: '20.79',
+    pricePerDay: '0.67',
+    withoutSolar: '102.66',
+    saved: '81.87'
+  },
+  {
     date: '4/30/2024',
     days: '29',
     dueDate: '5/22/2024',
@@ -8,6 +44,8 @@ export const postSolar = [
     averageUsagePerDay: '14',
     price: '11.09',
     pricePerDay: '0.38',
+    withoutSolar: '69.10',
+    saved: '58.01'
   },
   {
     date: '4/01/2024',
@@ -18,7 +56,8 @@ export const postSolar = [
     averageUsagePerDay: '9',
     price: '11.96',
     pricePerDay: '0.37',
-
+    withoutSolar: '56.16',
+    saved: '44.20'
   },
   {
     date: '2/29/2024',
@@ -29,6 +68,8 @@ export const postSolar = [
     averageUsagePerDay: '9',
     price: '19.90',
     pricePerDay: '0.69',
+    withoutSolar: '51.08',
+    saved: '31.18'
   },
   {
     date: '1/31/2024',
@@ -39,6 +80,8 @@ export const postSolar = [
     averageUsagePerDay: '15',
     price: '24.59',
     pricePerDay: '0.85',
+    withoutSolar: '72.97',
+    saved: '48.38'
   },
   {
     date: '1/2/2024',
@@ -49,6 +92,8 @@ export const postSolar = [
     averageUsagePerDay: '13',
     price: '10.78',
     pricePerDay: '0.33',
+    withoutSolar: '73.71',
+    saved: '62.93'
   },
   {
     date: '11/30/2023',
@@ -59,6 +104,8 @@ export const postSolar = [
     averageUsagePerDay: '9',
     price: '17.20',
     pricePerDay: '0.57',
+    withoutSolar: '52.92',
+    saved: '35.72'
   },
   {
     date: '10/31/2023',
@@ -69,6 +116,8 @@ export const postSolar = [
     averageUsagePerDay: '15',
     price: '26.60',
     pricePerDay: '0.92',
+    withoutSolar: '75.56',
+    saved: '48.96'
   },
   {
     date: '10/2/2023',
@@ -79,6 +128,8 @@ export const postSolar = [
     averageUsagePerDay: '28',
     price: '46.69',
     pricePerDay: '1.46',
+    withoutSolar: '137.16',
+    saved: '90.47'
   },
 ];
 
