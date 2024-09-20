@@ -2,6 +2,12 @@ import React from 'react';
 import { preSolar, postSolar } from './data';
 
 function Table() {
+  const parseDate = (dateString) => new Date(dateString).getTime();
+  // Function to sort the data by date (start field)
+  const sortByDate = (data) => {
+    return data.sort((a, b) => parseDate(b.start) - parseDate(a.start));
+  };
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="mt-8 flow-root">
@@ -14,13 +20,13 @@ function Table() {
                     scope="col"
                     className="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-2"
                   >
-                    Bill Date
+                    Date
                   </th>
                   <th
                     scope="col"
                     className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
                   >
-                    Usage (kWh)
+                    Total Usage (kWh)
                   </th>
                   <th
                     scope="col"
@@ -32,22 +38,22 @@ function Table() {
                     scope="col"
                     className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
                   >
-                    Cost (USD)
+                    Cost without Solar (USD)
                   </th>
                   <th
                     scope="col"
                     className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
                   >
-                    Cost Per Day (USD)
+                    Saved
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 <>
-                  {postSolar.map((transaction) => (
+                  {sortByDate(postSolar).map((transaction) => (
                     <tr key={`${transaction.date}`}>
                       <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-2">
-                        {transaction.date}
+                        {transaction.end}
                       </td>
                       <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-2">
                         {transaction.usage}
@@ -59,7 +65,12 @@ function Table() {
                         ${transaction.price}
                       </td>
                       <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-2">
-                        ${transaction.pricePerDay}
+                        $
+                        {Math.round(
+                          100 *
+                            (parseFloat(transaction.price) -
+                              parseFloat(transaction.bill))
+                        ) / 100}
                       </td>
                     </tr>
                   ))}
@@ -89,7 +100,7 @@ function Table() {
                         ${transaction.price}
                       </td>
                       <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-2">
-                        ${transaction.pricePerDay}
+                        $-
                       </td>
                     </tr>
                   ))}

@@ -25,30 +25,85 @@ export function calculateAverageDailyCost(
   const averageinitialCostPerDay = totalinitialCostPerDay / daysCounted;
   return averageinitialCostPerDay;
 }
-
-export function calculatePayoffDays(
-  actualCost,
-  initialCostPerDay,
-  annualInflation
+export function solarPayoffCalculator(
+  purchaseDate,
+  currentDate,
+  savedToDate,
+  cost
 ) {
-  let accumulatedSavings = 0;
-  let days = 0;
-  let costPerDay = initialCostPerDay;
-  const monthlyInflation = Math.pow(1 + annualInflation, 1 / 12) - 1;
+  // Parse dates to calculate the number of days that have passed
+  const purchase = purchaseDate;
+  const current = currentDate;
 
-  while (accumulatedSavings < actualCost) {
-    if (days % 30 === 0 && days !== 0) {
-      costPerDay *= 1 + monthlyInflation;
-    }
+  // Calculate the number of days since the purchase
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const daysPassed = Math.floor((current - purchase) / msPerDay);
 
-    accumulatedSavings += costPerDay;
-    days++;
+  // Calculate the number of years passed since the purchase
+  const yearsPassed = daysPassed / 365;
+
+  // Adjust daily savings rate for 3% annual inflation
+  const inflationRate = 0.03;
+  const adjustedDailySavingsRate =
+    (savedToDate / daysPassed) * Math.pow(1 + inflationRate, yearsPassed);
+
+  // Calculate the projected number of days until breakeven
+  const projectedDaysToBreakeven =
+    (cost - savedToDate) / adjustedDailySavingsRate;
+
+  // Calculate the total number of days from purchase to breakeven
+  const totalDaysToBreakeven = Math.floor(
+    projectedDaysToBreakeven + daysPassed
+  );
+
+  // Convert the total number of days to years and days
+  const projectedYears = Math.floor(totalDaysToBreakeven / 365);
+  const projectedDays = totalDaysToBreakeven % 365;
+
+  return {
+    projectedYears,
+    projectedDays,
+  };
+}
+
+export function projectedSavingsIn25Years(purchaseDate, savedToDate, cost) {
+  // Define the number of years for projection
+  const yearsToProject = 25;
+
+  // Calculate the daily savings rate based on the saved amount to date and the time since purchase
+  const currentDate = new Date();
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const daysPassed = Math.floor((currentDate - purchaseDate) / msPerDay);
+  const dailySavingsRate = savedToDate / daysPassed;
+
+  // Define the annual inflation rate for savings
+  const inflationRate = 0.03;
+
+  // Initialize the total savings with the amount already saved
+  let totalSavings = savedToDate;
+
+  // Project savings for the next 25 years, adjusting annually for inflation
+  for (let year = 0; year < yearsToProject; year++) {
+    // Adjust the daily savings rate for inflation
+    const adjustedDailySavingsRate =
+      dailySavingsRate * Math.pow(1 + inflationRate, year);
+
+    // Add the savings for the entire year (365 days)
+    totalSavings += adjustedDailySavingsRate * 365;
   }
 
-  // Convert days to years and days for the final output
-  const payoffYears = Math.floor(days / 365);
-  const leftoverDays = days % 365;
-  return { payoffYears, leftoverDays, days, accumulatedSavings };
+  // Calculate ROI
+  const totalROI = ((totalSavings - cost) / cost) * 100;
+
+  // Calculate annualized ROI using the compound interest formula
+  const annualizedROI =
+    (Math.pow(totalSavings / cost, 1 / yearsToProject) - 1) * 100;
+
+  return {
+    totalSavings,
+    totalROI,
+    annualizedROI,
+  };
 }
 
 

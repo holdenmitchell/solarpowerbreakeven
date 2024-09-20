@@ -1,57 +1,44 @@
 import React from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import {
-  calculateAverageDailyCost,
-  getDatesArray,
-  calculateReturn,
-} from './utils';
-import { concat } from 'lodash';
+import { postSolar } from './data'; // Import the data
 
-function PayoffChart({
-  actualCost,
-  costPerDayStart,
-  energyInflation,
-  purchaseDate,
-}) {
-  const currentDate = new Date();
-  const endDate = new Date('2048-08-08');
-  const dateRange = getDatesArray(purchaseDate, endDate);
+function PayoffChart({ actualCost }) {
+  // Helper function to convert a date string to a timestamp
+  const parseDate = (dateString) => new Date(dateString).getTime();
 
-  const data = dateRange.map((date) => {
-    const differenceInMilliseconds = date - purchaseDate;
-    const differenceInDays = Math.floor(
-      differenceInMilliseconds / (1000 * 60 * 60 * 24)
-    );
-    const averageCost = calculateAverageDailyCost(
-      differenceInDays,
-      costPerDayStart,
-      energyInflation
-    );
+  // Function to sort the data by date (start field)
+  const sortByDate = (data) => {
+    return data.sort((a, b) => parseDate(a.start) - parseDate(b.start));
+  };
 
-    return {
-      x: date.getTime(),
-      y: Math.round(differenceInDays * averageCost),
-    };
-  });
+  // Function to calculate cumulative sums for the series data
+  const calculateCumulativeData = (data, key) => {
+    let cumulativeSum = 0;
+    return data.map((entry) => {
+      cumulativeSum += parseFloat(entry[key]);
+      return {
+        x: parseDate(entry.start),
+        y: cumulativeSum,
+      };
+    });
+  };
 
-  const startToNow = data.filter((d) => d.x <= currentDate.getTime());
-  const nowToEnd = data.filter((d) => d.x >= currentDate.getTime());
+  // Sort the postSolar data by date
+  const sortedData = sortByDate(postSolar);
+
+  // Calculate cumulative data for 'bill' and 'price' using the sorted data
+  const cumulativeWithSolar = calculateCumulativeData(sortedData, 'bill');
+  const cumulativeWithoutSolar = calculateCumulativeData(sortedData, 'saved');
 
   const options = {
     chart: {
       zoomType: 'x',
+      type: 'areaspline',
     },
     title: {
-      text: '',
+      text: 'Cumulative Solar Savings Over Time',
       align: 'left',
-    },
-    subtitle: {
-      text: '',
-      align: 'left',
-    },
-    legend: {
-      enabled: false,
     },
     xAxis: {
       type: 'datetime',
@@ -61,53 +48,70 @@ function PayoffChart({
     },
     yAxis: {
       title: {
-        text: 'Quantity',
+        text: 'Cumulative Cost (USD)',
       },
-      plotLines: [
-        {
-          dashStyle: 'dash',
-          color: '#072232',
-          width: 2,
-          value: actualCost,
-          label: {
-            text: 'Break-even point',
-            style: {
-              color: '#606060',
-            },
-          },
+      labels: {
+        formatter: function () {
+          return `$${this.value.toLocaleString()}`;
         },
-      ],
+      },
     },
     tooltip: {
+      shared: true,
       useHTML: true,
       formatter: function () {
-        const point = this.point;
-        const costOfSystem = -actualCost;
-        const savedOnElectricity = point.y;
-        const netSavings = savedOnElectricity + costOfSystem;
-        const purchaseDate = new Date('2023-08-08').getTime();
-        const currentDate = new Date(point.x);
-        const timeDiff = currentDate - purchaseDate;
-        const daysDiff = timeDiff / (1000 * 3600 * 24); // Convert milliseconds to years
-        const annualROI = calculateReturn(
-          Math.abs(costOfSystem),
-          savedOnElectricity,
-          daysDiff
-        );
-        const yearsDiff = daysDiff / 365;
-        const yrsSincePurchase = Math.floor(yearsDiff);
-        const daysSincePurchase = Math.floor(daysDiff % 365);
+        let costWithSolar = 0;
+        let costWithoutSolar = 0;
 
-        return `<table>
-                        <tr><td class='text-lg'>${yrsSincePurchase} yrs ${daysSincePurchase} days Since Purchase</td></tr>
-                        <tr><td>Cost of System:</td><td>$${costOfSystem.toLocaleString()}</td></tr>
-                        <tr><td>Saved on Electricity:</td><td>$${savedOnElectricity.toLocaleString()}</td></tr>
-                        <tr><td>Net:</td><td>$${netSavings.toLocaleString()}</td></tr>
-                        <tr><td>Annual ROI:</td><td>${annualROI.toFixed(
-                          2
-                        )}%</td></tr>
-                    </table>`;
+        // Loop through the points to find the two series (with solar and without solar)
+        this.points.forEach((point) => {
+          if (point.series.name === 'Cumulative Cost with Solar') {
+            costWithSolar = point.y;
+          }
+          if (point.series.name === 'Cumulative Cost without Solar') {
+            costWithoutSolar = point.y;
+          }
+        });
+
+        // Total cost without solar is the sum of both points
+        const totalCostWithoutSolar = costWithSolar + costWithoutSolar;
+
+        // Calculate the savings
+        const savings = totalCostWithoutSolar - costWithSolar;
+
+        return `
+      <div class="p-2">
+        <table class="table-auto w-full">
+          <thead>
+            <tr>
+              <td class="font-semibold text-gray-700 text-center" colspan="2">${Highcharts.dateFormat(
+                '%b %Y',
+                this.x
+              )}</td>
+            </tr>
+          </thead>
+          <tbody class="text-left mt-8">
+            <tr>
+              <th class="font-semibold text-gray-700">Total Cost without Solar</th>
+              <td class="pl-4">$${totalCostWithoutSolar.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <th class="font-semibold text-gray-700">Cumulative Cost with Solar</th>
+              <td class="pl-4">$${costWithSolar.toFixed(2)}</td>
+            </tr>
+            <tr class="border-t border-gray-200">
+              <th class="font-semibold text-gray-700">Amount Saved</th>
+              <td class="pl-4 text-green-600">$${savings.toFixed(2)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
       },
+    },
+
+    legend: {
+      enabled: true,
     },
     credits: {
       enabled: false,
@@ -115,23 +119,21 @@ function PayoffChart({
     plotOptions: {
       areaspline: {
         fillOpacity: 0.5,
+        stacking: 'normal', // Stacks the two series
       },
     },
     series: [
       {
-        name: 'Total Saved',
-        data: startToNow.map((d) => [d.x, d.y]),
-        color: '#072232',
-        type: 'area',
+        name: 'Cumulative Cost without Solar',
+        data: cumulativeWithoutSolar,
+        color: '#FF5201', // Non-solar cost line color
+        fillColor: 'rgba(114, 187, 99, 0.1)', // Set fill color with 0.1 opacity
       },
       {
-        name: 'Projected Savings',
-        data: concat(
-          startToNow.map((d) => [null, null]),
-          nowToEnd.map((d) => [d.x, d.y])
-        ),
-        color: '#FFD700',
-        type: 'line',
+        name: 'Cumulative Cost with Solar',
+        data: cumulativeWithSolar,
+        color: '#72BB63', // Solar cost line color (user's preferred color)
+        fillOpacity: 0,
       },
     ],
   };

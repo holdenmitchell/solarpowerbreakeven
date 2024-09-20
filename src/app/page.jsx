@@ -2,8 +2,8 @@
 import Header from './Header';
 import {
   calculateAverageDailyCost,
-  calculatePayoffDays,
-  calculateTotalSavings,
+  solarPayoffCalculator,
+  projectedSavingsIn25Years,
 } from './utils';
 import Table from './Table';
 import { preSolar, postSolar } from './data';
@@ -15,29 +15,16 @@ import Action from './Action';
 import Details from './Details';
 
 export default function Home() {
-  const totalCostWithSolar = postSolar.reduce(
+  const costWithout = postSolar.reduce(
     (acc, transaction) => acc + parseFloat(transaction.price),
     0
   );
-
-  const totalCostBeforeSolar = preSolar.reduce(
-    (acc, transaction) => acc + parseFloat(transaction.price),
+  const costWith = postSolar.reduce(
+    (acc, transaction) => acc + parseFloat(transaction.bill),
     0
   );
+  const saved = costWithout - costWith;
 
-  const totalDaysWithSolar = postSolar.reduce(
-    (acc, transaction) => acc + parseInt(transaction.days),
-    0
-  );
-
-  const totalDaysBeforeSolar = preSolar.reduce(
-    (acc, transaction) => acc + parseInt(transaction.days),
-    0
-  );
-
-  const dailyCostWithSolar = totalCostWithSolar / totalDaysWithSolar;
-  const costPerDayBeforeSolar = totalCostBeforeSolar / totalDaysBeforeSolar;
-  let dailyCost = costPerDayBeforeSolar - dailyCostWithSolar;
   const fullCostOfSystem = 27940;
   const totalTaxCredit = 8372;
   const totalSolarizeGreenCounty = 3080;
@@ -47,54 +34,52 @@ export default function Home() {
   // https://www.solarreviews.com/blog/average-electricity-cost-increase-per-year
   const energyInflation = 0.0259; // 2.59% annual inflation
 
-  const { payoffYears, leftoverDays, days, accumulatedSavings } =
-    calculatePayoffDays(actualCost, dailyCost, energyInflation);
+  
 
   // Days since August 2023
   const purchaseDate = new Date('2023-08-08');
   const currentDate = new Date();
+
+  const { projectedYears, projectedDays } =
+    solarPayoffCalculator(purchaseDate, currentDate, saved, actualCost);
+
+  const { totalSavings, annualizedROI } = projectedSavingsIn25Years(
+    purchaseDate,
+    saved,
+    actualCost
+  );
   const timeElaspedMilliseconds = currentDate - purchaseDate;
   const timeElaspedDays = Math.floor(
     timeElaspedMilliseconds / (1000 * 60 * 60 * 24)
   );
 
-  const averageCostPerDay = calculateAverageDailyCost(
-    timeElaspedDays,
-    dailyCost,
-    energyInflation
-  );
-
-  const projectedSavings = calculateTotalSavings(dailyCost, energyInflation);
-
   const stats = [
     {
       name: 'Estimated Payoff',
-      value: `${payoffYears} yrs, ${leftoverDays} days`,
+      value: `${projectedYears} yrs, ${projectedDays} days`,
       change: '',
       changeType: 'negative',
       displayChange: false,
     },
     {
-      name: 'Avg. $ / Day Since Solar',
-      value: `$${dailyCostWithSolar.toFixed(2)}`,
-      change: `$${dailyCost.toFixed(2)}`,
+      name: 'Saved To Date',
+      value: `$${Math.round(saved).toLocaleString()}`,
+      change: '',
+      changeType: 'negative',
+      displayChange: true,
+    },
+    {
+      name: 'Projected Savings in 25 Years',
+      value: `$${Math.round(totalSavings).toLocaleString()}`,
+      change: '',
+      changeType: 'negative',
+      displayChange: true,
+    },
+    {
+      name: '25 yr Annualized ROI',
+      value: `${Math.round(100 * annualizedROI) / 100}%`,
+      change: '',
       changeType: 'positive',
-      displayChange: true,
-    },
-    {
-      name: 'Estimated Amount Saved',
-      value: `$${Math.round(
-        timeElaspedDays * averageCostPerDay
-      ).toLocaleString()}`,
-      change: '',
-      changeType: 'negative',
-      displayChange: true,
-    },
-    {
-      name: 'Projected Savings (25 Yrs)',
-      value: `$${Math.round(projectedSavings).toLocaleString()}`,
-      change: '',
-      changeType: 'negative',
       displayChange: true,
     },
   ];
@@ -119,12 +104,11 @@ export default function Home() {
           <div>
             <SectionHeader text="Payoff Chart" />
             <SectionBody>
+              {(
               <PayoffChart
                 actualCost={actualCost}
-                costPerDayStart={dailyCost}
-                energyInflation={energyInflation}
-                purchaseDate={purchaseDate}
               />
+              )}
 
               <h2 className="mx-auto mt-8 max-w-2xl text-2xl font-semibold leading-6 text-gray-900 lg:mx-0 lg:max-w-none border-b pb-4">
                 System Details
