@@ -69,14 +69,14 @@ export default function Home() {
       displayChange: true,
     },
     {
-      name: 'Projected Savings in 25 Years',
+      name: 'Projected Savings (25 yrs)',
       value: `$${Math.round(totalSavings).toLocaleString()}`,
       change: '',
       changeType: 'negative',
       displayChange: true,
     },
     {
-      name: '25 yr Annualized ROI',
+      name: 'Projected Annualized ROI (25 yrs)',
       value: `${Math.round(100 * annualizedROI) / 100}%`,
       change: '',
       changeType: 'positive',
