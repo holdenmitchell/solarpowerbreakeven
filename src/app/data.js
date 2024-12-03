@@ -1,6 +1,21 @@
 export const postSolar = [
   {
     year: 2024,
+    month: 'Nov',
+    start: '11/4/2024',
+    end: '12/2/2024',
+    days: '29',
+    bill: '23.07',
+    usage_rcvd: 621,
+    usage_dlvd: 235,
+    production_rcvd: 2,
+    production_dlvd: 766,
+    usage: 378,
+    price: '65.65',
+    saved: '42.58',
+  },
+  {
+    year: 2024,
     month: 'Oct',
     start: '9/28/2024',
     end: '11/4/2024',
