@@ -27,7 +27,7 @@ export default function Home() {
 
   const fullCostOfSystem = 27940;
   const totalTaxCredit = 8372;
-  const totalSolarizeGreenCounty = 3080;
+  const totalSolarizeGreenCounty = 0;
   const totalCredits = totalTaxCredit + totalSolarizeGreenCounty;
   const actualCost =
     fullCostOfSystem - totalTaxCredit - totalSolarizeGreenCounty;

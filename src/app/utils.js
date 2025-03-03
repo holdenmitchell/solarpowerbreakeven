@@ -38,7 +38,6 @@ export function solarPayoffCalculator(
   // Calculate the number of days since the purchase
   const msPerDay = 1000 * 60 * 60 * 24;
   const daysPassed = Math.floor((current - purchase) / msPerDay);
-
   // Calculate the number of years passed since the purchase
   const yearsPassed = daysPassed / 365;
 
