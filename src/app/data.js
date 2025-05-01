@@ -1,6 +1,21 @@
 export const postSolar = [
   {
     year: 2025,
+    month: 'Apr',
+    start: '3/31/2025',
+    end: '4/30/2025',
+    days: '30',
+    bill: '0.41',
+    usage_rcvd: 744,
+    usage_dlvd: 478,
+    production_rcvd: 2,
+    production_dlvd: 1025,
+    usage: 757,
+    price: '104.29',
+    saved: '103.88',
+  },
+  {
+    year: 2025,
     month: 'Mar',
     start: '2/28/2025',
     end: '3/31/2025',
