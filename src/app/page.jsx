@@ -32,16 +32,20 @@ export default function Home() {
   const actualCost =
     fullCostOfSystem - totalTaxCredit - totalSolarizeGreenCounty;
   // https://www.solarreviews.com/blog/average-electricity-cost-increase-per-year
-  const energyInflation = 0.0259; // 2.59% annual inflation
-
-  
+  const energyInflation = 0.0359; // 3.59% annual inflation
 
   // Days since August 2023
   const purchaseDate = new Date('2023-08-08');
   const currentDate = new Date();
 
-  const { projectedYears, projectedDays } =
-    solarPayoffCalculator(purchaseDate, currentDate, saved, actualCost);
+  const { projectedYears, projectedDays, breakevenDate } =
+    solarPayoffCalculator(
+      purchaseDate,
+      currentDate,
+      saved,
+      actualCost,
+      energyInflation
+    );
 
   const { totalSavings, annualizedROI } = projectedSavingsIn25Years(
     purchaseDate,
@@ -55,10 +59,17 @@ export default function Home() {
 
   const stats = [
     {
-      name: 'Estimated Payoff',
-      value: `${projectedYears} yrs, ${projectedDays} days`,
+      name: 'Estimated Payoff (Date)',
+      value: `${projectedYears} yrs, ${projectedDays} days `,
       change: '',
       changeType: 'negative',
+      displayChange: false,
+    },
+    {
+      name: 'Projected Breakeven Date',
+      value: `${breakevenDate.toLocaleDateString()}`,
+      change: '',
+      changeType: 'positive',
       displayChange: false,
     },
     {
@@ -80,7 +91,7 @@ export default function Home() {
       value: `${Math.round(100 * annualizedROI) / 100}%`,
       change: '',
       changeType: 'positive',
-      displayChange: true,
+      displayChange: false,
     },
   ];
 
@@ -92,7 +103,7 @@ export default function Home() {
         <div className="relative isolate overflow-hidden pt-32">
           {/* Stats */}
           <div className="border-b border-b-gray-900/10 lg:border-t lg:border-t-gray-900/5">
-            <dl className="mx-auto grid max-w-7xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:px-2 xl:px-0">
+            <dl className="mx-auto grid max-w-7xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 lg:px-2 xl:px-0">
               {stats.map((stat, statIdx) => (
                 <StatCard key={stat.name} stat={stat} statIdx={statIdx} />
               ))}
@@ -104,11 +115,7 @@ export default function Home() {
           <div>
             <SectionHeader text="Payoff Chart" />
             <SectionBody>
-              {(
-              <PayoffChart
-                actualCost={actualCost}
-              />
-              )}
+              {<PayoffChart actualCost={actualCost} />}
 
               <h2 className="mx-auto mt-8 max-w-2xl text-2xl font-semibold leading-6 text-gray-900 lg:mx-0 lg:max-w-none border-b pb-4">
                 System Details

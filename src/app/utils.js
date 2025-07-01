@@ -29,39 +29,50 @@ export function solarPayoffCalculator(
   purchaseDate,
   currentDate,
   savedToDate,
-  cost
+  cost,
+  energyInflation
 ) {
-  // Parse dates to calculate the number of days that have passed
-  const purchase = purchaseDate;
-  const current = currentDate;
-
-  // Calculate the number of days since the purchase
   const msPerDay = 1000 * 60 * 60 * 24;
-  const daysPassed = Math.floor((current - purchase) / msPerDay);
-  // Calculate the number of years passed since the purchase
+  const daysPassed = Math.floor((currentDate - purchaseDate) / msPerDay);
+
+  if (daysPassed <= 0) {
+    return {
+      projectedYears: 0,
+      projectedDays: 0,
+      error: 'Not enough time has passed to calculate savings rate.',
+    };
+  }
+
+  if (savedToDate >= cost) {
+    return {
+      projectedYears: 0,
+      projectedDays: 0,
+      message: 'System has already paid for itself.',
+    };
+  }
+
   const yearsPassed = daysPassed / 365;
+  const baseDailySavings = savedToDate / daysPassed;
 
-  // Adjust daily savings rate for 3% annual inflation
-  const inflationRate = 0.03;
-  const adjustedDailySavingsRate =
-    (savedToDate / daysPassed) * Math.pow(1 + inflationRate, yearsPassed);
+  // Only future savings are affected by inflation
+  const adjustedDailySavings =
+    baseDailySavings * Math.pow(1 + energyInflation, yearsPassed);
 
-  // Calculate the projected number of days until breakeven
-  const projectedDaysToBreakeven =
-    (cost - savedToDate) / adjustedDailySavingsRate;
-
-  // Calculate the total number of days from purchase to breakeven
+  const projectedDaysToBreakeven = (cost - savedToDate) / adjustedDailySavings;
   const totalDaysToBreakeven = Math.floor(
     projectedDaysToBreakeven + daysPassed
   );
 
-  // Convert the total number of days to years and days
   const projectedYears = Math.floor(totalDaysToBreakeven / 365);
   const projectedDays = totalDaysToBreakeven % 365;
+  const breakevenDate = new Date(
+    purchaseDate.getTime() + totalDaysToBreakeven * msPerDay
+  );
 
   return {
     projectedYears,
     projectedDays,
+    breakevenDate,
   };
 }
 
@@ -105,7 +116,6 @@ export function projectedSavingsIn25Years(purchaseDate, savedToDate, cost) {
   };
 }
 
-
 export function calculateTotalSavings(
   initialCostPerDay,
   annualInflation,
@@ -132,7 +142,6 @@ export function calculateTotalSavings(
   return accumulatedSavings;
 }
 
-
 export function getDatesArray(startDate, endDate) {
   const dateArray = [];
   let currentDate = new Date(startDate);
@@ -143,7 +152,6 @@ export function getDatesArray(startDate, endDate) {
   }
   return dateArray;
 }
-
 
 export function calculateReturn(presentValue, futureValue, numberOfDays) {
   // Convert the number of days into years since CAGR is an annual metric

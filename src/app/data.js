@@ -1,5 +1,19 @@
 export const postSolar = [
-  // 04/30	06/02	$11.95	778	603	2	1207	1030	$129.55	$117.60	177
+  {
+    year: 2025,
+    month: 'June',
+    start: '6/2/2025',
+    end: '6/30/2025',
+    days: '28',
+    bill: '119.44',
+    usage_rcvd: 351,
+    usage_dlvd: 1174,
+    production_rcvd: 2,
+    production_dlvd: 1079,
+    usage: 1900,
+    price: '314.88',
+    saved: '195.44',
+  },
   {
     year: 2025,
     month: 'May',
