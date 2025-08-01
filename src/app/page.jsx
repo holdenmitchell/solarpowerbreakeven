@@ -8,6 +8,7 @@ import {
 import Table from './Table';
 import { preSolar, postSolar } from './data';
 import PayoffChart from './PayoffChart';
+import MonthlySavingsChart from './MonthlySavingsChart';
 import SectionHeader from './SectionHeader';
 import StatCard from './StatCard';
 import SectionBody from './SectionBody';
@@ -108,6 +109,15 @@ export default function Home() {
                 <StatCard key={stat.name} stat={stat} statIdx={statIdx} />
               ))}
             </dl>
+          </div>
+        </div>
+
+        <div className="space-y-8 py-8 xl:space-y-20">
+          <div>
+            <SectionHeader text="Monthly Solar Savings" />
+            <SectionBody>
+              <MonthlySavingsChart />
+            </SectionBody>
           </div>
         </div>
 
