@@ -1,4 +1,37 @@
+// 
+// {
+//   year: ,
+//   month: ,
+//   start: '',
+//   end: '',
+//   days: '',
+//   bill: '',
+//   usage_rcvd: ,
+//   usage_dlvd: ,
+//   production_rcvd: ,
+//   production_dlvd: ,
+//   usage: ,
+//   price: '',
+//   saved: ''
+// }
+
+
 export const postSolar = [
+  {
+    year: 2025,
+    month: 'September',
+    start: '9/2/2025',
+    end: '9/30/2025',
+    days: '29',
+    bill: '135.90',
+    usage_rcvd: 334,
+    usage_dlvd: 1128,
+    production_rcvd: 2,
+    production_dlvd: 994,
+    usage: 1786,
+    price: '324.90',
+    saved: '189.00'
+  },
   {
     year: 2025,
     month: 'August',

@@ -51,18 +51,47 @@ export function solarPayoffCalculator(
     };
   }
 
-  const yearsPassed = daysPassed / 365;
   const baseDailySavings = savedToDate / daysPassed;
+  const remainingCost = cost - savedToDate;
 
-  // Only future savings are affected by inflation
-  const adjustedDailySavings =
-    baseDailySavings * Math.pow(1 + energyInflation, yearsPassed);
+  // Calculate breakeven with compounding inflation year-over-year
+  let accumulatedSavings = 0;
+  let daysToBreakeven = 0;
+  let currentYear = 0;
 
-  const projectedDaysToBreakeven = (cost - savedToDate) / adjustedDailySavings;
-  const totalDaysToBreakeven = Math.floor(
-    projectedDaysToBreakeven + daysPassed
-  );
+  while (accumulatedSavings < remainingCost) {
+    // Apply inflation for each future year
+    const inflationMultiplier = Math.pow(1 + energyInflation, currentYear);
+    const dailySavingsThisYear = baseDailySavings * inflationMultiplier;
 
+    // Calculate savings for this year (or remaining days needed)
+    const daysInYear = 365;
+    const savingsNeeded = remainingCost - accumulatedSavings;
+    const savingsThisYear = dailySavingsThisYear * daysInYear;
+
+    if (accumulatedSavings + savingsThisYear >= remainingCost) {
+      // Breakeven occurs during this year
+      const daysNeededThisYear = Math.ceil(savingsNeeded / dailySavingsThisYear);
+      daysToBreakeven += daysNeededThisYear;
+      break;
+    } else {
+      // Need to continue into next year
+      accumulatedSavings += savingsThisYear;
+      daysToBreakeven += daysInYear;
+      currentYear++;
+    }
+
+    // Safety check to prevent infinite loop
+    if (currentYear > 100) {
+      return {
+        projectedYears: 0,
+        projectedDays: 0,
+        error: 'Breakeven projection exceeds reasonable timeframe.',
+      };
+    }
+  }
+
+  const totalDaysToBreakeven = daysPassed + daysToBreakeven;
   const projectedYears = Math.floor(totalDaysToBreakeven / 365);
   const projectedDays = totalDaysToBreakeven % 365;
   const breakevenDate = new Date(
