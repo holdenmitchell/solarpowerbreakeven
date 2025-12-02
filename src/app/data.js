@@ -1,4 +1,4 @@
-// 
+//
 // {
 //   year: ,
 //   month: ,
@@ -15,8 +15,22 @@
 //   saved: ''
 // }
 
-
 export const postSolar = [
+  {
+    year: 2025,
+    month: 11,
+    start: '10/31',
+    end: '12/1',
+    days: '31',
+    bill: '33.84',
+    usage_rcvd: 581,
+    usage_dlvd: 566,
+    production_rcvd: 3,
+    production_dlvd: 793,
+    usage: 775,
+    price: '120.49',
+    saved: '86.65',
+  },
   {
     year: 2025,
     month: 'October',
