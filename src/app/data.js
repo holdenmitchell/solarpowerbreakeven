@@ -395,7 +395,7 @@ export const postSolar = [
     year: 2023,
     month: 'Dec',
     start: '11/30/2023',
-    end: '01/02/2023',
+    end: '01/02/2024',
     days: '33',
     bill: '10.78',
     usage_rcvd: 518,

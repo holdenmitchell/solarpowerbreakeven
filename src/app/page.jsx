@@ -33,7 +33,19 @@ export default function Home() {
   const actualCost =
     fullCostOfSystem - totalTaxCredit - totalSolarizeGreenCounty;
   // https://www.solarreviews.com/blog/average-electricity-cost-increase-per-year
-  const energyInflation = 0.0359; // 3.59% annual inflation
+  const energyInflation = 0.035; // 3.5% annual inflation
+
+  // Compute trailing 12-month daily savings rate
+  const trailing12 = postSolar.slice(0, 12);
+  const trailing12Savings = trailing12.reduce(
+    (acc, t) => acc + parseFloat(t.saved),
+    0
+  );
+  const trailing12Days = trailing12.reduce(
+    (acc, t) => acc + parseInt(t.days),
+    0
+  );
+  const trailingDailySavings = trailing12Savings / trailing12Days;
 
   // Days since August 2023
   const purchaseDate = new Date('2023-08-08');
@@ -45,13 +57,16 @@ export default function Home() {
       currentDate,
       saved,
       actualCost,
-      energyInflation
+      energyInflation,
+      trailingDailySavings
     );
 
   const { totalSavings, annualizedROI } = projectedSavingsIn25Years(
     purchaseDate,
     saved,
-    actualCost
+    actualCost,
+    energyInflation,
+    trailingDailySavings
   );
   const timeElaspedMilliseconds = currentDate - purchaseDate;
   const timeElaspedDays = Math.floor(

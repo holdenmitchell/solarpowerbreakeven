@@ -30,7 +30,8 @@ export function solarPayoffCalculator(
   currentDate,
   savedToDate,
   cost,
-  energyInflation
+  energyInflation,
+  dailySavingsRate
 ) {
   const msPerDay = 1000 * 60 * 60 * 24;
   const daysPassed = Math.floor((currentDate - purchaseDate) / msPerDay);
@@ -51,7 +52,7 @@ export function solarPayoffCalculator(
     };
   }
 
-  const baseDailySavings = savedToDate / daysPassed;
+  const baseDailySavings = dailySavingsRate || savedToDate / daysPassed;
   const remainingCost = cost - savedToDate;
 
   // Calculate breakeven with compounding inflation year-over-year
@@ -105,18 +106,19 @@ export function solarPayoffCalculator(
   };
 }
 
-export function projectedSavingsIn25Years(purchaseDate, savedToDate, cost) {
+export function projectedSavingsIn25Years(purchaseDate, savedToDate, cost, energyInflation, dailySavingsRate) {
   // Define the number of years for projection
   const yearsToProject = 25;
 
-  // Calculate the daily savings rate based on the saved amount to date and the time since purchase
-  const currentDate = new Date();
-  const msPerDay = 1000 * 60 * 60 * 24;
-  const daysPassed = Math.floor((currentDate - purchaseDate) / msPerDay);
-  const dailySavingsRate = savedToDate / daysPassed;
+  // Use passed daily savings rate (trailing 12-month) or fall back to lifetime average
+  if (!dailySavingsRate) {
+    const currentDate = new Date();
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const daysPassed = Math.floor((currentDate - purchaseDate) / msPerDay);
+    dailySavingsRate = savedToDate / daysPassed;
+  }
 
-  // Define the annual inflation rate for savings
-  const inflationRate = 0.03;
+  const inflationRate = energyInflation || 0.035;
 
   // Initialize the total savings with the amount already saved
   let totalSavings = savedToDate;
