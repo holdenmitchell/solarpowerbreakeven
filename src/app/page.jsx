@@ -127,6 +127,25 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Progress Bar */}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-gray-700">
+              Payoff Progress
+            </span>
+            <span className="text-sm font-medium text-gray-700">
+              ${Math.round(saved).toLocaleString()} / ${actualCost.toLocaleString()}
+              {' '}({Math.min(100, Math.round((saved / actualCost) * 100))}%)
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div
+              className="bg-green-500 h-4 rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(100, (saved / actualCost) * 100)}%` }}
+            />
+          </div>
+        </div>
+
         <div className="space-y-8 py-8 xl:space-y-20">
           <div>
             <SectionHeader text="Monthly Solar Savings" />
