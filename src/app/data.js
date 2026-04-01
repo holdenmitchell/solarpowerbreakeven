@@ -15,7 +15,7 @@
 //   saved: ''
 // }
 
-export const postSolar = [
+const _postSolar = [
   {
     year: 2026,
     month: 'Mar',
@@ -30,6 +30,9 @@ export const postSolar = [
     usage: 979,
     price: '145.47',
     saved: '112.23',
+    gasSaved: '99.24', // 647.6 mi / 22 mpg * $3.371 - $0 supercharging
+    supercharging: '0.00',
+    odometer: 6394,
   },
   {
     year: 2026,
@@ -45,6 +48,9 @@ export const postSolar = [
     usage: 758,
     price: '123.64',
     saved: '88.24',
+    gasSaved: '52.86', // 612.5 mi / 22 mpg * $2.674 - $21.59 supercharging
+    supercharging: '21.59',
+    odometer: 5746,
   },
   {
     year: 2026,
@@ -60,6 +66,9 @@ export const postSolar = [
     usage: 1393,
     price: '190.13',
     saved: '75.74',
+    gasSaved: '84.30', // 704.3 mi / 22 mpg * $2.633 - $0 supercharging
+    supercharging: '0.00',
+    odometer: 5134,
   },
   {
     year: 2025,
@@ -75,6 +84,9 @@ export const postSolar = [
     usage: 968,
     price: '142.29',
     saved: '67.92',
+    gasSaved: '51.88', // 543.1 mi / 22 mpg * $2.672 - $14.09 supercharging
+    supercharging: '14.09',
+    odometer: 4429,
   },
   {
     year: 2025,
@@ -90,6 +102,9 @@ export const postSolar = [
     usage: 775,
     price: '120.49',
     saved: '86.65',
+    gasSaved: '64.10', // 1486.7 mi / 22 mpg * $2.876 - $130.26 supercharging
+    supercharging: '130.26',
+    odometer: 3886,
   },
   {
     year: 2025,
@@ -105,6 +120,9 @@ export const postSolar = [
     usage: 1317,
     price: '220.36',
     saved: '126.88',
+    gasSaved: '63.56', // 1818.9 mi / 22 mpg * $2.856 - $172.57 supercharging
+    supercharging: '172.57',
+    odometer: 2400,
   },
   {
     year: 2025,
@@ -120,6 +138,9 @@ export const postSolar = [
     usage: 1786,
     price: '324.90',
     saved: '189.00',
+    gasSaved: '73.90', // 580.6 mi / 22 mpg * $2.80 - $0 supercharging
+    supercharging: '0.00',
+    odometer: 581,
   },
   {
     year: 2025,
@@ -511,6 +532,39 @@ export const postSolar = [
     saved: '24.30',
   },
 ];
+
+// EV data - purchased September 2025
+// Gas prices: Midwest PADD 2 regional averages from EIA + AAA
+export const evData = {
+  purchaseDate: '2025-09-01',
+  totalMiles: 6394,
+  trackedMiles: 2672.2,
+  roadTrips: { '2025-10': 1200, '2025-11': 600 }, // Iowa + KC trips
+  missingMilesPerMonth: (6394 - 2672.2 - 1200 - 600) / 7, // ~274.5 evenly distributed
+  monthsOwned: 7, // Sept 2025 - Mar 2026
+  milesPerMonth: 6394 / 7, // ~913.4
+  oldVehicleMpg: 22,
+  gallonsPerMonth: 6394 / 7 / 22, // ~41.52
+  gasPrices: {
+    '2025-09': 2.80, // estimated from trend
+    '2025-10': 2.856,
+    '2025-11': 2.876,
+    '2025-12': 2.672,
+    '2026-01': 2.633,
+    '2026-02': 2.674,
+    '2026-03': 3.371,
+  },
+  gasInflation: 0.03, // 3% annual gas price inflation for projections
+  milesPerKwh: 2.7, // EV efficiency
+  superchargerRatePerKwh: 0.40, // estimated $/kWh at supercharger
+};
+
+// Compute evMiles from odometer deltas (postSolar is newest-first)
+export const postSolar = _postSolar.map((entry, i) => {
+  if (!entry.odometer) return entry;
+  const prevOdometer = _postSolar[i + 1]?.odometer || 0;
+  return { ...entry, evMiles: entry.odometer - prevOdometer };
+});
 
 export const preSolar = [
   {

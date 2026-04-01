@@ -193,3 +193,39 @@ export function calculateReturn(presentValue, futureValue, numberOfDays) {
 
   return roi; // Return the CAGR, rounded to two decimal places
 }
+
+/**
+ * Compute evMiles for an entry by finding the previous entry's odometer reading.
+ * postSolar is sorted newest-first, so the "previous" month is the next index.
+ */
+export function getEvMiles(entry, allEntries) {
+  if (!entry.odometer) return 0;
+  const idx = allEntries.indexOf(entry);
+  const prevEntry = allEntries[idx + 1];
+  const prevOdometer = prevEntry?.odometer || 0;
+  return entry.odometer - prevOdometer;
+}
+
+/**
+ * Calculate the EV home charging electricity cost for a given month.
+ * Only counts against savings when home usage exceeds solar production.
+ * Caps at net grid consumption (doesn't attribute more than actual grid draw to EV).
+ */
+export function calculateEvElecCost(entry, milesPerKwh = 2.7, superchargerRate = 0.40) {
+  if (!entry.gasSaved) return 0;
+
+  const totalEvKwh = (parseFloat(entry.evMiles || 0)) / milesPerKwh;
+  const superchargedKwh = parseFloat(entry.supercharging || 0) / superchargerRate;
+  const homeKwh = Math.max(0, totalEvKwh - superchargedKwh);
+
+  // Net energy: total usage minus solar production
+  const netEnergy = (entry.usage || 0) - (entry.production_dlvd || 0);
+
+  // Only charge for EV kWh that pushed usage above solar production
+  const chargeableKwh = Math.min(homeKwh, Math.max(0, netEnergy));
+
+  // Effective electricity rate (what it would cost without solar)
+  const rate = parseFloat(entry.price) / (entry.usage || 1);
+
+  return chargeableKwh * rate;
+}

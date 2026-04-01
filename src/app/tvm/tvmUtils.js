@@ -1,4 +1,5 @@
 import { postSolar } from '../data';
+import { calculateEvElecCost } from '../utils';
 
 /**
  * Scenario A: Invest the lump sum in a brokerage instead of buying solar.
@@ -72,7 +73,10 @@ export function calculateScenarioB(dailySavingsRate, annualReturn, capGainsTaxRa
  */
 export function getTrailingDailySavingsRate() {
   const trailing12 = postSolar.slice(0, 12);
-  const totalSaved = trailing12.reduce((acc, t) => acc + parseFloat(t.saved), 0);
+  const totalSaved = trailing12.reduce(
+    (acc, t) => acc + parseFloat(t.saved) + parseFloat(t.gasSaved || 0) - calculateEvElecCost(t),
+    0
+  );
   const totalDays = trailing12.reduce((acc, t) => acc + parseInt(t.days), 0);
   return totalSaved / totalDays;
 }

@@ -4,9 +4,10 @@ import {
   calculateAverageDailyCost,
   solarPayoffCalculator,
   projectedSavingsIn25Years,
+  calculateEvElecCost,
 } from './utils';
 import Table from './Table';
-import { preSolar, postSolar } from './data';
+import { preSolar, postSolar, evData } from './data';
 import PayoffChart from './PayoffChart';
 import MonthlySavingsChart from './MonthlySavingsChart';
 import SectionHeader from './SectionHeader';
@@ -24,7 +25,12 @@ export default function Home() {
     (acc, transaction) => acc + parseFloat(transaction.bill),
     0
   );
-  const saved = costWithout - costWith;
+  const electricitySaved = costWithout - costWith;
+  const gasSaved = postSolar.reduce(
+    (acc, transaction) => acc + parseFloat(transaction.gasSaved || 0) - calculateEvElecCost(transaction),
+    0
+  );
+  const saved = electricitySaved + gasSaved;
 
   const fullCostOfSystem = 27940;
   const totalTaxCredit = 8372;
@@ -35,10 +41,10 @@ export default function Home() {
   // https://www.solarreviews.com/blog/average-electricity-cost-increase-per-year
   const energyInflation = 0.035; // 3.5% annual inflation
 
-  // Compute trailing 12-month daily savings rate
+  // Compute trailing 12-month daily savings rate (electricity + gas - EV charging cost)
   const trailing12 = postSolar.slice(0, 12);
   const trailing12Savings = trailing12.reduce(
-    (acc, t) => acc + parseFloat(t.saved),
+    (acc, t) => acc + parseFloat(t.saved) + parseFloat(t.gasSaved || 0) - calculateEvElecCost(t),
     0
   );
   const trailing12Days = trailing12.reduce(
@@ -93,7 +99,7 @@ export default function Home() {
       value: `$${Math.round(saved).toLocaleString()}`,
       change: '',
       changeType: 'negative',
-      displayChange: true,
+      displayChange: false,
     },
     {
       name: 'Projected Savings (25 yrs)',
@@ -138,11 +144,31 @@ export default function Home() {
               {' '}({Math.min(100, Math.round((saved / actualCost) * 100))}%)
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+          <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden flex">
             <div
-              className="bg-green-500 h-4 rounded-full transition-all duration-500"
-              style={{ width: `${Math.min(100, (saved / actualCost) * 100)}%` }}
+              className="h-4 transition-all duration-500"
+              style={{
+                width: `${Math.min(100, (electricitySaved / actualCost) * 100)}%`,
+                backgroundColor: '#72BB63',
+              }}
             />
+            <div
+              className="h-4 transition-all duration-500"
+              style={{
+                width: `${Math.max(0, Math.min(100 - (electricitySaved / actualCost) * 100, (gasSaved / actualCost) * 100))}%`,
+                backgroundColor: '#3B82F6',
+              }}
+            />
+          </div>
+          <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: '#72BB63' }} />
+              Electric: ${Math.round(electricitySaved).toLocaleString()}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: '#3B82F6' }} />
+              EV Gas: ${Math.round(gasSaved).toLocaleString()}
+            </span>
           </div>
         </div>
 

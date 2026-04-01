@@ -1,0 +1,18 @@
+{
+  "odometerMiles": 6394,
+  "trackedMiles": 2672.2,
+  "roadTrips": {
+    "2025-10": { "destination": "Iowa", "miles": 1200 },
+    "2025-11": { "destination": "Kansas City", "miles": 600 }
+  },
+  "missingMilesPerMonth": 274.5,
+  "monthlyMileage": [
+    { "month": "2025-09", "tracked": 306.1, "adjusted": 580.6 },
+    { "month": "2025-10", "tracked": 344.4, "adjusted": 1818.9, "note": "+1200 Iowa trip" },
+    { "month": "2025-11", "tracked": 612.2, "adjusted": 1486.7, "note": "+600 KC trip" },
+    { "month": "2025-12", "tracked": 268.6, "adjusted": 543.1 },
+    { "month": "2026-01", "tracked": 429.8, "adjusted": 704.3 },
+    { "month": "2026-02", "tracked": 338.0, "adjusted": 612.5 },
+    { "month": "2026-03", "tracked": 373.1, "adjusted": 647.6 }
+  ]
+}

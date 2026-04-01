@@ -137,8 +137,9 @@ export default function TVMPage() {
                     Scenario B: Solar + Reinvest Savings
                   </h3>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    Buy solar panels and invest the monthly electricity savings into a brokerage account.
+                    Buy solar panels and invest the monthly savings (electricity + EV gas savings) into a brokerage account.
                     Savings are tax-free (they&apos;re reduced expenses, not income) and grow with energy inflation.
+                    EV gas savings are included since solar powers home charging, replacing gas costs.
                     Each month&apos;s contribution compounds over time. Capital gains tax only applies to
                     the investment growth above your total contributions.
                   </p>
@@ -148,8 +149,8 @@ export default function TVMPage() {
               <div className="mt-6 rounded-lg bg-blue-50 shadow-sm ring-1 ring-blue-200 p-6">
                 <h3 className="text-sm font-semibold text-blue-900 mb-2">Key Insight</h3>
                 <p className="text-sm text-blue-800 leading-relaxed">
-                  Solar savings are effectively tax-free income — you&apos;re spending less on electricity rather than
-                  earning taxable investment returns. This means more of your solar savings flow directly into
+                  Solar and EV savings are effectively tax-free income — you&apos;re spending less on electricity and gas rather than
+                  earning taxable investment returns. This means more of your savings flow directly into
                   wealth accumulation. The brokerage-only scenario faces capital gains tax on all growth,
                   while the solar scenario only pays tax on brokerage gains above the contributed savings.
                 </p>
