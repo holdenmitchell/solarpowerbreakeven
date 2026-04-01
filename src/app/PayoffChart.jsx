@@ -93,15 +93,15 @@ function PayoffChart({ actualCost }) {
           <tbody class="text-left mt-8">
             <tr>
               <th class="font-semibold text-gray-700">Total Cost without Solar</th>
-              <td class="pl-4">$${totalCostWithoutSolar.toFixed(2)}</td>
+              <td class="pl-4">$${totalCostWithoutSolar.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
             </tr>
             <tr>
               <th class="font-semibold text-gray-700">Cumulative Cost with Solar</th>
-              <td class="pl-4">$${costWithSolar.toFixed(2)}</td>
+              <td class="pl-4">$${costWithSolar.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
             </tr>
             <tr class="border-t border-gray-200">
               <th class="font-semibold text-gray-700">Amount Saved</th>
-              <td class="pl-4 text-green-600">$${savings.toFixed(2)}</td>
+              <td class="pl-4 text-green-600">$${savings.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
             </tr>
           </tbody>
         </table>
