@@ -2,7 +2,7 @@ import React from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { postSolar } from './data';
-import { calculateEvElecCost } from './utils';
+import { calculateEvElecCost, calculateSolarEvCredit } from './utils';
 
 function PayoffChart({ actualCost }) {
   const parseDate = (dateString) => new Date(dateString).getTime();
@@ -14,16 +14,22 @@ function PayoffChart({ actualCost }) {
   const sortedData = sortByDate(postSolar);
 
   let cumElectric = 0;
-  let cumGas = 0;
+  let cumSolarEv = 0;
+  let cumAdditionalEv = 0;
   const electricData = [];
-  const gasData = [];
+  const solarEvData = [];
+  const additionalEvData = [];
 
   sortedData.forEach((entry) => {
     const x = parseDate(entry.start);
+    const credit = calculateSolarEvCredit(entry);
+    const netEv = parseFloat(entry.gasSaved || 0) - calculateEvElecCost(entry);
     cumElectric += parseFloat(entry.saved);
-    cumGas += parseFloat(entry.gasSaved || 0) - calculateEvElecCost(entry);
+    cumSolarEv += credit;
+    cumAdditionalEv += netEv - credit;
     electricData.push({ x, y: cumElectric });
-    gasData.push({ x, y: cumGas });
+    solarEvData.push({ x, y: cumSolarEv });
+    additionalEvData.push({ x, y: cumAdditionalEv });
   });
 
   const options = {
@@ -70,18 +76,18 @@ function PayoffChart({ actualCost }) {
       useHTML: true,
       formatter: function () {
         let electric = 0;
-        let gas = 0;
+        let solarEv = 0;
+        let additionalEv = 0;
 
         this.points.forEach((point) => {
-          if (point.series.name === 'Electric Savings') {
-            electric = point.y;
-          }
-          if (point.series.name === 'EV Gas Savings') {
-            gas = point.y;
-          }
+          if (point.series.name === 'Electric Savings') electric = point.y;
+          if (point.series.name === 'Solar→EV Charging') solarEv = point.y;
+          if (point.series.name === 'Additional EV Savings') additionalEv = point.y;
         });
 
-        const total = electric + gas;
+        const solarTotal = electric + solarEv;
+        const total = solarTotal + additionalEv;
+        const fmt = (v) => v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         return `
       <div class="p-2">
@@ -94,15 +100,23 @@ function PayoffChart({ actualCost }) {
           <tbody class="text-left mt-2">
             <tr>
               <th style="color: #72BB63" class="font-semibold">Electric Savings</th>
-              <td style="color: #72BB63" class="pl-4">$${electric.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td style="color: #72BB63" class="pl-4">$${fmt(electric)}</td>
             </tr>
             <tr>
-              <th style="color: #3B82F6" class="font-semibold">EV Gas Savings</th>
-              <td style="color: #3B82F6" class="pl-4">$${gas.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <th style="color: #D97706" class="font-semibold">Solar→EV Charging</th>
+              <td style="color: #D97706" class="pl-4">$${fmt(solarEv)}</td>
+            </tr>
+            <tr class="border-t border-gray-100">
+              <th class="font-semibold text-gray-700">Solar Subtotal (Payoff)</th>
+              <td class="pl-4 font-semibold" style="color: #72BB63">$${fmt(solarTotal)}</td>
+            </tr>
+            <tr>
+              <th style="color: #3B82F6" class="font-semibold">Additional EV Savings</th>
+              <td style="color: #3B82F6" class="pl-4">$${fmt(additionalEv)}</td>
             </tr>
             <tr class="border-t border-gray-200">
               <th class="font-semibold text-gray-700">Total Saved</th>
-              <td class="pl-4 font-semibold text-gray-700">$${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td class="pl-4 font-semibold text-gray-700">$${fmt(total)}</td>
             </tr>
           </tbody>
         </table>
@@ -125,9 +139,14 @@ function PayoffChart({ actualCost }) {
     },
     series: [
       {
-        name: 'EV Gas Savings',
-        data: gasData,
+        name: 'Additional EV Savings',
+        data: additionalEvData,
         color: '#3B82F6',
+      },
+      {
+        name: 'Solar→EV Charging',
+        data: solarEvData,
+        color: '#FBBF24',
       },
       {
         name: 'Electric Savings',

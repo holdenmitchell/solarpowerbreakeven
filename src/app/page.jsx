@@ -5,6 +5,7 @@ import {
   solarPayoffCalculator,
   projectedSavingsIn25Years,
   calculateEvElecCost,
+  calculateSolarEvCredit,
 } from './utils';
 import Table from './Table';
 import { preSolar, postSolar, evData } from './data';
@@ -26,11 +27,16 @@ export default function Home() {
     0
   );
   const electricitySaved = costWithout - costWith;
-  const gasSaved = postSolar.reduce(
-    (acc, transaction) => acc + parseFloat(transaction.gasSaved || 0) - calculateEvElecCost(transaction),
+  const solarEvCredit = postSolar.reduce(
+    (acc, t) => acc + calculateSolarEvCredit(t),
     0
   );
-  const saved = electricitySaved + gasSaved;
+  const netEvSavings = postSolar.reduce(
+    (acc, t) => acc + parseFloat(t.gasSaved || 0) - calculateEvElecCost(t),
+    0
+  );
+  const additionalEvSavings = netEvSavings - solarEvCredit;
+  const saved = electricitySaved + solarEvCredit;
 
   const fullCostOfSystem = 27940;
   const totalTaxCredit = 8372;
@@ -41,10 +47,10 @@ export default function Home() {
   // https://www.solarreviews.com/blog/average-electricity-cost-increase-per-year
   const energyInflation = 0.035; // 3.5% annual inflation
 
-  // Compute trailing 12-month daily savings rate (electricity + gas - EV charging cost)
+  // Trailing 12-month daily SOLAR savings rate (electricity + solar's share of EV charging value)
   const trailing12 = postSolar.slice(0, 12);
   const trailing12Savings = trailing12.reduce(
-    (acc, t) => acc + parseFloat(t.saved) + parseFloat(t.gasSaved || 0) - calculateEvElecCost(t),
+    (acc, t) => acc + parseFloat(t.saved) + calculateSolarEvCredit(t),
     0
   );
   const trailing12Days = trailing12.reduce(
@@ -137,7 +143,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">
-              Payoff Progress
+              Solar Payoff Progress
             </span>
             <span className="text-sm font-medium text-gray-700">
               ${Math.round(saved).toLocaleString()} / ${actualCost.toLocaleString()}
@@ -155,19 +161,23 @@ export default function Home() {
             <div
               className="h-4 transition-all duration-500"
               style={{
-                width: `${Math.max(0, Math.min(100 - (electricitySaved / actualCost) * 100, (gasSaved / actualCost) * 100))}%`,
-                backgroundColor: '#3B82F6',
+                width: `${Math.max(0, Math.min(100 - (electricitySaved / actualCost) * 100, (solarEvCredit / actualCost) * 100))}%`,
+                backgroundColor: '#FBBF24',
               }}
             />
           </div>
-          <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+          <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 flex-wrap">
             <span className="flex items-center gap-1">
               <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: '#72BB63' }} />
               Electric: ${Math.round(electricitySaved).toLocaleString()}
             </span>
             <span className="flex items-center gap-1">
+              <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: '#FBBF24' }} />
+              Solar→EV: ${Math.round(solarEvCredit).toLocaleString()}
+            </span>
+            <span className="flex items-center gap-1 pl-2 ml-2 border-l border-gray-300">
               <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: '#3B82F6' }} />
-              EV Gas: ${Math.round(gasSaved).toLocaleString()}
+              Additional EV (not in payoff): ${Math.round(additionalEvSavings).toLocaleString()}
             </span>
           </div>
         </div>

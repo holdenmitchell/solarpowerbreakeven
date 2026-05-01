@@ -229,3 +229,25 @@ export function calculateEvElecCost(entry, milesPerKwh = 2.7, superchargerRate =
 
   return chargeableKwh * rate;
 }
+
+/**
+ * Gas-equivalent value of EV miles powered by excess solar.
+ * Reattributes that share of gas-savings from the EV bucket to the solar bucket.
+ */
+export function calculateSolarEvCredit(entry, milesPerKwh = 2.7, superchargerRate = 0.40) {
+  if (!entry.gasSaved) return 0;
+
+  const totalEvKwh = parseFloat(entry.evMiles || 0) / milesPerKwh;
+  if (totalEvKwh === 0) return 0;
+
+  const superchargedKwh = parseFloat(entry.supercharging || 0) / superchargerRate;
+  const homeKwh = Math.max(0, totalEvKwh - superchargedKwh);
+  const netEnergy = (entry.usage || 0) - (entry.production_dlvd || 0);
+  const chargeableKwh = Math.min(homeKwh, Math.max(0, netEnergy));
+  const freeSolarKwh = homeKwh - chargeableKwh;
+
+  const solarShare = freeSolarKwh / totalEvKwh;
+  const grossGasAvoided = parseFloat(entry.gasSaved) + parseFloat(entry.supercharging || 0);
+
+  return solarShare * grossGasAvoided;
+}
