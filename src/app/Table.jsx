@@ -68,8 +68,15 @@ function Table() {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 <>
-                  {sortByDate(postSolar).map((transaction) => (
-                    <tr key={`${transaction.date}`}>
+                  {(() => {
+                    const sorted = sortByDate(postSolar);
+                    return sorted.map((transaction, idx) => {
+                      const next = sorted[idx + 1];
+                      const showEvRow =
+                        transaction.gasSaved && (!next || !next.gasSaved);
+                      return (
+                    <React.Fragment key={`${transaction.year}-${transaction.month}`}>
+                    <tr>
                       <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-2">
                         {transaction.end}
                       </td>
@@ -216,7 +223,23 @@ function Table() {
                         ).toFixed(2)}
                       </td>
                     </tr>
-                  ))}
+                    {showEvRow && (
+                      <tr className="border-t border-b border-gray-200">
+                        <th
+                          colSpan={8}
+                          scope="colgroup"
+                          className="mx-auto bg-blue-50 py-3 pl-4 pr-3 text-lg text-left font-semibold text-gray-900 sm:pl-3"
+                        >
+                          <div className="flex justify-center">
+                            🚗 ⚡ EV Purchased September 2025 ⚡ 🚗
+                          </div>
+                        </th>
+                      </tr>
+                    )}
+                    </React.Fragment>
+                      );
+                    });
+                  })()}
                   <tr className="border-t border-b border-gray-200">
                     <th
                       colSpan={8}
