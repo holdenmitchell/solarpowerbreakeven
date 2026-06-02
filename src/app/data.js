@@ -15,7 +15,27 @@
 //   saved: ''
 // }
 
+// 2026	May	04/30	06/01	$99.45	692	1099	2	1191	1596	$218.12	$118.67
+
 const _postSolar = [
+  {
+    year: 2026,
+    month: 'May',
+    start: '4/30/2026',
+    end: '6/1/2026',
+    days: '33',
+    bill: '99.45',
+    usage_rcvd: 692,
+    usage_dlvd: 1099,
+    production_rcvd: 2,
+    production_dlvd: 1191,
+    usage: 1596,
+    price: '218.12',
+    saved: '118.67',
+    gasSaved: '186.19', // 1086 mi / 22 mpg * $3.833 - $3.02 supercharging
+    supercharging: '3.02',
+    odometer: 8318,
+  },
   {
     year: 2026,
     month: 'Apr',

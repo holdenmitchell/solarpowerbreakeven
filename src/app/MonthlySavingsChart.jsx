@@ -67,7 +67,7 @@ function MonthlySavingsChart() {
       stackLabels: {
         enabled: true,
         formatter: function () {
-          return `$${this.total.toFixed(0)}`;
+          return this.total != null ? `$${this.total.toFixed(0)}` : '';
         },
         style: {
           fontWeight: 'bold',
