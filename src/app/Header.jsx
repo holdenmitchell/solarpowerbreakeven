@@ -11,9 +11,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // Single page app where pages just go down the that heading
-  const navigation = [
-    { name: 'Time Value of Money', href: '/tvm' },
-  ];
+  const navigation = [];
 
   return (
     <header

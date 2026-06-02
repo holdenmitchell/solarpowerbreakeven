@@ -3,8 +3,8 @@ import Header from './Header';
 import {
   calculateAverageDailyCost,
   solarPayoffCalculator,
-  projectedSavingsIn25Years,
   calculateEvElecCost,
+  projectedSavingsIn25Years,
   calculateSolarEvCredit,
 } from './utils';
 import Table from './Table';
@@ -129,9 +129,24 @@ export default function Home() {
 
       <main>
         <div className="relative isolate overflow-hidden pt-32">
+          {/* Intro */}
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-8">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Real-Life Residential Solar Power Breakeven
+            </h1>
+            <p className="mt-3 text-base leading-7 text-gray-600">
+              Tracking the actual payoff of a home solar installation in
+              Oklahoma on PSO (Public Service Company of Oklahoma) with net
+              monthly metering, using real monthly electricity bills, measured
+              savings, and EV charging cost offsets. Below you&apos;ll find the
+              total saved to date, progress toward breakeven, the projected
+              payoff date, and the estimated 25-year return on investment.
+            </p>
+          </div>
+
           {/* Stats */}
-          <div className="border-b border-b-gray-900/10 lg:border-t lg:border-t-gray-900/5">
-            <dl className="mx-auto grid max-w-7xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 lg:px-2 xl:px-0">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
               {stats.map((stat, statIdx) => (
                 <StatCard key={stat.name} stat={stat} statIdx={statIdx} />
               ))}
@@ -141,6 +156,7 @@ export default function Home() {
 
         {/* Progress Bar */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10">
+          <div className="rounded-xl border border-gray-900/10 bg-white px-4 py-5 shadow-sm sm:px-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">
               Solar Payoff Progress
@@ -179,6 +195,7 @@ export default function Home() {
               <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: '#3B82F6' }} />
               Additional EV (not in payoff): ${Math.round(additionalEvSavings).toLocaleString()}
             </span>
+          </div>
           </div>
         </div>
 
