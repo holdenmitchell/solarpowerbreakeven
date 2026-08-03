@@ -32,6 +32,12 @@ function Table() {
                     scope="col"
                     className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
                   >
+                    Solar Produced (kWh)
+                  </th>
+                  <th
+                    scope="col"
+                    className="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
                     Days
                   </th>
                   <th
@@ -82,6 +88,9 @@ function Table() {
                       </td>
                       <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-2">
                         {transaction.usage}
+                      </td>
+                      <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-2">
+                        {transaction.production_dlvd}
                       </td>
                       <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-2">
                         {transaction.days}
@@ -226,7 +235,7 @@ function Table() {
                     {showEvRow && (
                       <tr className="border-t border-b border-gray-200">
                         <th
-                          colSpan={8}
+                          colSpan={9}
                           scope="colgroup"
                           className="mx-auto bg-blue-50 py-3 pl-4 pr-3 text-lg text-left font-semibold text-gray-900 sm:pl-3"
                         >
@@ -258,6 +267,9 @@ function Table() {
                       </td>
                       <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-2">
                         {transaction.usage}
+                      </td>
+                      <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-2">
+                        -
                       </td>
                       <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-2">
                         {transaction.days}

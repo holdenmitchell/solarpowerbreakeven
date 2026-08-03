@@ -142,6 +142,14 @@ export default function Home() {
               total saved to date, progress toward breakeven, the projected
               payoff date, and the estimated 25-year return on investment.
             </p>
+            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium">
+              <a href="/ev" className="text-blue-600 hover:text-blue-500">
+                EV9 vs. Sienna Hybrid cost comparison <span aria-hidden="true">&rarr;</span>
+              </a>
+              <a href="/tvm" className="text-blue-600 hover:text-blue-500">
+                Solar vs. S&amp;P 500 <span aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
           </div>
 
           {/* Stats */}

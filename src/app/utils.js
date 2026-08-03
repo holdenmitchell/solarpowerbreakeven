@@ -207,6 +207,62 @@ export function getEvMiles(entry, allEntries) {
 }
 
 /**
+ * Break a month's EV charging into where the energy actually came from:
+ * supercharger, grid-drawn home charging, or surplus solar that would
+ * otherwise have been exported.
+ *
+ * Single source of truth for the charging split — calculateEvElecCost and
+ * calculateSolarEvCredit both build on this.
+ */
+export function getEvChargingBreakdown(
+  entry,
+  milesPerKwh = 2.7,
+  superchargerRate = 0.40
+) {
+  const totalEvKwh = parseFloat(entry.evMiles || 0) / milesPerKwh;
+  const superchargedKwh = parseFloat(entry.supercharging || 0) / superchargerRate;
+  const homeKwh = Math.max(0, totalEvKwh - superchargedKwh);
+
+  // Net energy: total usage minus solar production
+  const netEnergy = (entry.usage || 0) - (entry.production_dlvd || 0);
+
+  // Only the EV kWh that pushed usage above solar production cost anything
+  const chargeableKwh = Math.min(homeKwh, Math.max(0, netEnergy));
+  const freeSolarKwh = homeKwh - chargeableKwh;
+
+  // Effective electricity rate (what it would cost without solar)
+  const rate = parseFloat(entry.price) / (entry.usage || 1);
+
+  return {
+    totalEvKwh,
+    superchargedKwh,
+    homeKwh,
+    chargeableKwh,
+    freeSolarKwh,
+    rate,
+    gridCost: chargeableKwh * rate,
+  };
+}
+
+/**
+ * Recover the gas price used for a month's gasSaved figure.
+ *
+ * gasSaved is stored net of supercharging and computed against oldVehicleMpg,
+ * so the price backs out exactly. This lets a comparison against a vehicle with
+ * different fuel economy be recomputed from the same real monthly prices —
+ * gasSaved itself is only valid for the 22 mpg baseline it was built with.
+ */
+export function getGasPrice(entry, oldVehicleMpg = 22) {
+  const miles = parseFloat(entry.evMiles || 0);
+  if (!miles || !entry.gasSaved) return 0;
+
+  const grossGasAvoided =
+    parseFloat(entry.gasSaved) + parseFloat(entry.supercharging || 0);
+
+  return (grossGasAvoided * oldVehicleMpg) / miles;
+}
+
+/**
  * Calculate the EV home charging electricity cost for a given month.
  * Only counts against savings when home usage exceeds solar production.
  * Caps at net grid consumption (doesn't attribute more than actual grid draw to EV).
@@ -214,20 +270,7 @@ export function getEvMiles(entry, allEntries) {
 export function calculateEvElecCost(entry, milesPerKwh = 2.7, superchargerRate = 0.40) {
   if (!entry.gasSaved) return 0;
 
-  const totalEvKwh = (parseFloat(entry.evMiles || 0)) / milesPerKwh;
-  const superchargedKwh = parseFloat(entry.supercharging || 0) / superchargerRate;
-  const homeKwh = Math.max(0, totalEvKwh - superchargedKwh);
-
-  // Net energy: total usage minus solar production
-  const netEnergy = (entry.usage || 0) - (entry.production_dlvd || 0);
-
-  // Only charge for EV kWh that pushed usage above solar production
-  const chargeableKwh = Math.min(homeKwh, Math.max(0, netEnergy));
-
-  // Effective electricity rate (what it would cost without solar)
-  const rate = parseFloat(entry.price) / (entry.usage || 1);
-
-  return chargeableKwh * rate;
+  return getEvChargingBreakdown(entry, milesPerKwh, superchargerRate).gridCost;
 }
 
 /**
@@ -237,14 +280,12 @@ export function calculateEvElecCost(entry, milesPerKwh = 2.7, superchargerRate =
 export function calculateSolarEvCredit(entry, milesPerKwh = 2.7, superchargerRate = 0.40) {
   if (!entry.gasSaved) return 0;
 
-  const totalEvKwh = parseFloat(entry.evMiles || 0) / milesPerKwh;
+  const { totalEvKwh, freeSolarKwh } = getEvChargingBreakdown(
+    entry,
+    milesPerKwh,
+    superchargerRate
+  );
   if (totalEvKwh === 0) return 0;
-
-  const superchargedKwh = parseFloat(entry.supercharging || 0) / superchargerRate;
-  const homeKwh = Math.max(0, totalEvKwh - superchargedKwh);
-  const netEnergy = (entry.usage || 0) - (entry.production_dlvd || 0);
-  const chargeableKwh = Math.min(homeKwh, Math.max(0, netEnergy));
-  const freeSolarKwh = homeKwh - chargeableKwh;
 
   const solarShare = freeSolarKwh / totalEvKwh;
   const grossGasAvoided = parseFloat(entry.gasSaved) + parseFloat(entry.supercharging || 0);
