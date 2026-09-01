@@ -20,6 +20,24 @@
 const _postSolar = [
   {
     year: 2026,
+    month: 'Aug',
+    start: '7/31/2026',
+    end: '8/31/2026',
+    days: '31',
+    bill: '302.73',
+    usage_rcvd: 366,
+    usage_dlvd: 2166,
+    production_rcvd: 2,
+    production_dlvd: 1276,
+    usage: 3074,
+    price: '612.40',
+    saved: '309.67',
+    gasSaved: '178.60', // 1083 mi / 22 mpg * $3.628 - $0 supercharging
+    supercharging: '0.00',
+    odometer: 11180,
+  },
+  {
+    year: 2026,
     month: 'Jul',
     start: '6/30/2026',
     end: '7/31/2026',

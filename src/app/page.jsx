@@ -85,6 +85,15 @@ export default function Home() {
     timeElaspedMilliseconds / (1000 * 60 * 60 * 24)
   );
 
+  // Time still to run before breakeven, measured from today rather than from
+  // the install date (projectedYears/projectedDays are total system life).
+  const remainingDays = Math.max(
+    0,
+    Math.floor((breakevenDate - currentDate) / (1000 * 60 * 60 * 24))
+  );
+  const remainingYears = Math.floor(remainingDays / 365);
+  const remainingDaysOfYear = remainingDays % 365;
+
   const stats = [
     {
       name: 'Estimated Payoff (Date)',
@@ -94,8 +103,8 @@ export default function Home() {
       displayChange: false,
     },
     {
-      name: 'Projected Breakeven Date',
-      value: `${breakevenDate.toLocaleDateString()}`,
+      name: 'Projected Breakeven (Time Left)',
+      value: `${remainingYears} yrs, ${remainingDaysOfYear} days`,
       change: '',
       changeType: 'positive',
       displayChange: false,
